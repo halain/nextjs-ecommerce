@@ -1,15 +1,36 @@
 
+
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { UiContext } from '@/context';
 import { Box, Divider, Drawer, IconButton, Input, InputAdornment, List, ListItem, ListItemIcon, ListItemText, ListSubheader,  ListItemButton,
   //icons
-  AccountCircleOutlined, AdminPanelSettings, CategoryOutlined, ConfirmationNumberOutlined, EscalatorWarningOutlined, FemaleOutlined, LoginOutlined, MaleOutlined, SearchOutlined, VpnKeyOutlined
+  AccountCircleOutlined, AdminPanelSettings, CategoryOutlined, ConfirmationNumberOutlined, EscalatorWarningOutlined, FemaleOutlined, LoginOutlined, MaleOutlined, SearchOutlined, VpnKeyOutlined,
 } from './material';
 
 
-
 export const SideMenu = () => {
+
+    const router = useRouter();
+    const { isMenuOpen, toggleSideMenu } = useContext(UiContext);
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const onSearchTerm = () => {
+        if( searchTerm.trim().length === 0 ) return;
+        navigateTo(`/search/${ searchTerm }`);
+    
+    }
+
+    const navigateTo = (path: string) => {
+        toggleSideMenu();
+        router.push(path);
+    }
+
   return (
     <Drawer
-        open={ false }
+        open={ isMenuOpen }
+        onClose={ toggleSideMenu }
         anchor='right'
         sx={{ backdropFilter: 'blur(4px)', transition: 'all 0.5s ease-out' }}
     >
@@ -19,12 +40,16 @@ export const SideMenu = () => {
 
                 <ListItem>
                     <Input
+                        autoFocus
+                        value={ searchTerm }
+                        onChange={ ( e ) => setSearchTerm(e.target.value) }
+                        onKeyUp={ (e) => e.key === 'Enter' && onSearchTerm() }
                         type='text'
                         placeholder="Buscar..."
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
-                                aria-label="toggle password visibility"
+                                    onClick={ onSearchTerm }
                                 >
                                  <SearchOutlined />
                                 </IconButton>
@@ -47,27 +72,28 @@ export const SideMenu = () => {
                     <ListItemText primary={'Mis Ordenes'} />
                 </ListItemButton>
 
-
-                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }} onClick={ () => navigateTo('/category/men') }>
                     <ListItemIcon>
                         <MaleOutlined/>
                     </ListItemIcon>
                     <ListItemText primary={'Hombres'} />
                 </ListItemButton>
-
-                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+                
+                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }} onClick={ ()=> navigateTo('/category/women') }>
                     <ListItemIcon>
                         <FemaleOutlined/>
                     </ListItemIcon>
                     <ListItemText primary={'Mujeres'} />
                 </ListItemButton>
+                
 
-                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+                <ListItemButton sx={{ display: { xs: '', sm: 'none' } }} onClick={ ()=> navigateTo('/category/kid') }>
                     <ListItemIcon>
                         <EscalatorWarningOutlined/>
                     </ListItemIcon>
                     <ListItemText primary={'Niños'} />
                 </ListItemButton>
+                
 
 
                 <ListItemButton >
